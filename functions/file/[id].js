@@ -7,9 +7,12 @@ export async function onRequest(context) {  // Contents of context object
         next, // used for middleware or to fetch assets    
         data, // arbitrary space for passing data between middlewares 
     } = context;
-
+    const record = await env.img_url.getWithMetadata(params.id);
+    if (record.metadata == null) {
+        return Response.redirect("https://static-res.pages.dev/teleimage/img-block-compressed.png", 302)
+    }
     const url = new URL(request.url);
-    
+
     const response = fetch('https://telegra.ph/' + url.pathname + url.search, {
         method: request.method,
         headers: request.headers,
@@ -27,7 +30,6 @@ export async function onRequest(context) {  // Contents of context object
 
             if (typeof env.img_url == "undefined" || env.img_url == null || env.img_url == "") { } else {
                 //check the record from kv
-                const record = await env.img_url.getWithMetadata(params.id);
                 console.log("record")
                 console.log(record)
                 if (record.metadata === null) {
